@@ -1,17 +1,20 @@
 """
-Note: this snipet is assumed to run on a Jupyter Notebook
+Note: this snipet is assumed to work on a Jupyter Notebook
 """
 
+!pip install dicom
 from torch.utils.data import Dataset, DataLoader
 from PIL import Image
 import os
 import torch
 import pandas as pd
 from skimage import io
+import pydicom
 
 class SIIMDataset(Dataset):
     """
     args:
+    - root_dir : parents dir of csv_file
     - phase    : phase of the dataset used (∈{"train", "test"})
     - transform:  
     """
@@ -26,11 +29,10 @@ class SIIMDataset(Dataset):
         return len(self.table)
 
     def __getitem__(self, idx):
-        img_path = os.path.join(self.root_dir + f"/dicom_images_{self.phase}",
-                                self.table["ImageId"][idx])
-        image = io.imread(img_path)
+        img_path = train_names[idx]
+        image = pydicom.dcmread(self.table["Path"][idx]).pixel_array
         label = self.table["EncodedPixels"][idx] if self.phase == "train" else None
-
+        
         image = Image.fromarray(image)
         image = image.convert("RGB")
 
@@ -39,15 +41,17 @@ class SIIMDataset(Dataset):
 
         sample = {'image':image, 'label':label}
         return sample
+       
 
 """
 上記クラスのテスト用スクリプト
 """
-train_set = SIIMDataset(root_dir="gdrive/My Drive", phase="train")
+train_set = SIIMDataset(root_dir="./gdrive/My Drive", phase="train")
 count=0
 
-for i,data in zip(train_set):
+for i,data in enumerate(train_set):
     print(data)
     count += 1
     if count == 5:
       break
+      
