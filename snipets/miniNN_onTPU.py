@@ -2,6 +2,11 @@
 # are [NUM_REPLICAS][NUM_VALUES]. A non replicated, single core, execution will
 # has NUM_REPLICAS == 1, but retain the same shape rank.
 
+# Colabにtorch_xlaモジュールをpullする
+!pip install \
+  http://storage.googleapis.com/pytorch-tpu-releases/tf-1.13/torch-1.0.0a0+1d94a2b-cp36-cp36m-linux_x86_64.whl  \
+  http://storage.googleapis.com/pytorch-tpu-releases/tf-1.13/torch_xla-0.1+5622d42-cp36-cp36m-linux_x86_64.whl
+
 import torch
 import torch.nn as nn
 import torch_xla
